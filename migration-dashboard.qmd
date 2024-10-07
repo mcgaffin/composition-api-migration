@@ -5,11 +5,13 @@ format:
 ---
 
 ```{r search-migration-complete}
+library(dplyr)
 library(httr2)
 library(jsonlite)
+library(kableExtra)
+library(knitr)
 library(purrr)
 library(tibble)
-library(knitr)
 
 GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
 
@@ -72,8 +74,12 @@ vue_component_total
 ## Row {height: 75%}
 
 ```{r}
-#! title: "Migrated Components"
-#! color: success
+#| title: "Migrated Components"
+#| color: success
 
-migrated_components
+tbsy <- data.frame(Components = unlist(migrated_components)) |>
+  as_tibble() |>
+  arrange(Components)
+
+tbsy |> kbl() |> kable_styling()
 ```
