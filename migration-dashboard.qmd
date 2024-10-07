@@ -40,10 +40,12 @@ resp_all_vue <- request('https://api.github.com') |>
   resp_body_json()
 
 vue_component_total <- resp_all_vue$total_count
+vue_components <- resp_all_vue$items |>
+  map(get_names_from_git_response)
 ```
 
 
-```{r echo=FALSE}
+```{r  echo=FALSE}
 search_results <- resp |> resp_body_json()
 
 migrated_count <- search_results$total_count
@@ -55,7 +57,7 @@ migrated_components <- search_results$items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Migrated Component Count"
+#| title: "Composition API Components"
 #| icon: check
 #| color: primary
 
@@ -64,22 +66,31 @@ migrated_count
 
 ```{r}
 #| content: valuebox
-#| title: "Vue Component Total"
+#| title: "All Vue Components"
 #| icon: hourglass
 #| color: warning
 
 vue_component_total
 ```
 
-## Row {height: 75%}
+## Row {.tabset}
 
 ```{r}
 #| title: "Migrated Components"
-#| color: success
 
 tbsy <- data.frame(Components = unlist(migrated_components)) |>
   as_tibble() |>
   arrange(Components)
 
 tbsy |> kbl() |> kable_styling()
+```
+
+```{r}
+#| title: Options API Components (incomplete)
+
+data.frame(Components = unlist(vue_components)) |>
+  as_tibble() |>
+  arrange(Components) |>
+  kbl() |>
+  kable_styling()
 ```
