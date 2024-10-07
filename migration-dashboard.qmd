@@ -1,0 +1,79 @@
+---
+title: Composition API Migration Dashboard
+format:
+  dashboard
+---
+
+```{r search-migration-complete}
+library(httr2)
+library(jsonlite)
+library(purrr)
+library(tibble)
+library(knitr)
+
+GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
+
+get_names_from_git_response <- function(item) {
+  item$name
+}
+
+resp <- request('https://api.github.com') |> 
+  req_url_path('search/code') |>
+  req_url_query(
+    q = I('"script%20setup"+language:vue+in:file+repo:rstudio/connect'),
+    per_page = 100
+  ) |> 
+  req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
+  req_perform()
+```
+
+```{r search-all-vue}
+resp_all_vue <- request('https://api.github.com') |> 
+  req_url_path('search/code') |>
+  req_url_query(
+    q = I('language:vue+in:file+repo:rstudio/connect')
+  ) |> 
+  req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
+  req_perform() |>
+  resp_body_json()
+
+vue_component_total <- resp_all_vue$total_count
+```
+
+
+```{r echo=FALSE}
+search_results <- resp |> resp_body_json()
+
+migrated_count <- search_results$total_count
+migrated_components <- search_results$items |>
+  map(get_names_from_git_response)
+```
+
+## Row {height: 25%}
+
+```{r}
+#| content: valuebox
+#| title: "Migrated Component Count"
+#| icon: check
+#| color: primary
+
+migrated_count
+```
+
+```{r}
+#| content: valuebox
+#| title: "Vue Component Total"
+#| icon: hourglass
+#| color: warning
+
+vue_component_total
+```
+
+## Row {height: 75%}
+
+```{r}
+#! title: "Migrated Components"
+#! color: success
+
+migrated_components
+```
