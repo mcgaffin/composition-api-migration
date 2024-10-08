@@ -11,36 +11,40 @@ library(jsonlite)
 library(kableExtra)
 library(knitr)
 library(purrr)
+library(stringr)
 library(tibble)
 
 GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
 
+
+
 get_names_from_git_response <- function(item) {
-  item$name
+  list(name = item$name, path = item$path)
 }
 
 resp <- request('https://api.github.com') |> 
   req_url_path('search/code') |>
   req_url_query(
-    q = I('"script%20setup"+language:vue+in:file+repo:rstudio/connect'),
+    q = I('"script%20setup"+language:Vue+in:file+repo:rstudio/connect'),
     per_page = 100
   ) |> 
   req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
   req_perform()
 ```
 
-```{r search-all-vue}
-resp_all_vue <- request('https://api.github.com') |> 
+```{r search-options-vue}
+resp_options_vue <- request('https://api.github.com') |> 
   req_url_path('search/code') |>
   req_url_query(
-    q = I('language:vue+in:file+repo:rstudio/connect')
+    q = I('"export%20default%20{"+language:Vue+in:file+repo:rstudio/connect'),
+    per_page = 100
   ) |> 
   req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
   req_perform() |>
   resp_body_json()
 
-vue_component_total <- resp_all_vue$total_count
-vue_components <- resp_all_vue$items |>
+vue_options_total <- resp_options_vue$total_count
+vue_components <- resp_options_vue$items |>
   map(get_names_from_git_response)
 ```
 
@@ -53,7 +57,7 @@ migrated_components <- search_results$items |>
   map(get_names_from_git_response)
 ```
 
-## Row {height: 25%}
+## Row
 
 ```{r}
 #| content: valuebox
@@ -66,17 +70,17 @@ migrated_count
 
 ```{r}
 #| content: valuebox
-#| title: "All Vue Components"
+#| title: "Options API Components"
 #| icon: hourglass
 #| color: warning
 
-vue_component_total
+vue_options_total
 ```
 
 ## Row {.tabset}
 
 ```{r}
-#| title: "Migrated Components"
+#| title: "Composition API"
 
 tbsy <- data.frame(Components = unlist(migrated_components)) |>
   as_tibble() |>
@@ -86,7 +90,7 @@ tbsy |> kbl() |> kable_styling()
 ```
 
 ```{r}
-#| title: Options API Components (incomplete)
+#| title: Options API
 
 data.frame(Components = unlist(vue_components)) |>
   as_tibble() |>
