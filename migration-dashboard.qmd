@@ -1,5 +1,5 @@
 ---
-title: Composition API Migration Dashboard - WIP
+title: Composition API Migration Dashboard
 format:
   dashboard
 ---
@@ -56,6 +56,12 @@ migrated_count <- search_results$total_count
 migrated_components <- search_results$items |>
   map(get_names_from_git_response)
 ```
+
+::: {.callout-tip}
+## Work In Progress
+
+The Composition API count appears to be accurate, but the Options API count is unconfirmed.
+:::
 
 ## Row
 
