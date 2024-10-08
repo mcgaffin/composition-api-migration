@@ -57,10 +57,10 @@ migrated_components <- search_results$items |>
   map(get_names_from_git_response)
 ```
 
-::: {.callout-tip}
+::: {.callout-warning}
 ## Work In Progress
 
-The Composition API count appears to be accurate, but the Options API count is unconfirmed.
+The Composition API count appears to be accurate, but the Options API count is unconfirmed. The list of components is not really working at the moment.
 :::
 
 ## Row
