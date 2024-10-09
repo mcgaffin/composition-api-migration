@@ -15,26 +15,36 @@ library(stringr)
 library(tibble)
 
 GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
+GITHUB_API_HOST <- 'https://api.github.com'
+GITHUB_SEARCH_PATH <- 'search/code'
 
 
 
 get_names_from_git_response <- function(item) {
-  list(name = item$name, path = item$path)
+  item$path |> str_replace('ui/dashboard/src/', '')
 }
+```
 
-resp <- request('https://api.github.com') |> 
-  req_url_path('search/code') |>
+```{r composition-query}
+
+composition_results <- request(GITHUB_API_HOST) |> 
+  req_url_path(GITHUB_SEARCH_PATH) |>
   req_url_query(
     q = I('"script%20setup"+language:Vue+in:file+repo:rstudio/connect'),
     per_page = 100
   ) |> 
   req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
-  req_perform()
+  req_perform() |>
+  resp_body_json()
+
+migrated_count <- composition_results$total_count
+migrated_components <- composition_results$items |>
+  map(get_names_from_git_response)
 ```
 
 ```{r search-options-vue}
-resp_options_vue <- request('https://api.github.com') |> 
-  req_url_path('search/code') |>
+resp_options_vue <- request(GITHUB_API_HOST) |> 
+  req_url_path(GITHUB_SEARCH_PATH) |>
   req_url_query(
     q = I('"export%20default%20{"+language:Vue+in:file+repo:rstudio/connect'),
     per_page = 100
@@ -45,15 +55,6 @@ resp_options_vue <- request('https://api.github.com') |>
 
 vue_options_total <- resp_options_vue$total_count
 vue_components <- resp_options_vue$items |>
-  map(get_names_from_git_response)
-```
-
-
-```{r  echo=FALSE}
-search_results <- resp |> resp_body_json()
-
-migrated_count <- search_results$total_count
-migrated_components <- search_results$items |>
   map(get_names_from_git_response)
 ```
 
