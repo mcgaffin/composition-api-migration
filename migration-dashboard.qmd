@@ -6,6 +6,7 @@ format:
 
 ```{r search-migration-complete}
 library(dplyr)
+library(glue)
 library(httr2)
 library(jsonlite)
 library(kableExtra)
@@ -18,24 +19,27 @@ GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
 GITHUB_API_HOST <- 'https://api.github.com'
 GITHUB_SEARCH_PATH <- 'search/code'
 
-
-
 get_names_from_git_response <- function(item) {
   item$path |> str_replace('ui/dashboard/src/', '')
+}
+
+request_all_pages <- function(search_str) {
+  query <- glue('"{search_str}"+language:Vue+in:file+repo:rstudio/connect')
+  agg_results <- request(GITHUB_API_HOST) |> 
+    req_url_path(GITHUB_SEARCH_PATH) |>
+    req_url_query(
+      q = I(query),
+      per_page = 100
+    ) |> 
+    req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
+    req_perform() |>
+    resp_body_json()
+
 }
 ```
 
 ```{r composition-query}
-
-composition_results <- request(GITHUB_API_HOST) |> 
-  req_url_path(GITHUB_SEARCH_PATH) |>
-  req_url_query(
-    q = I('"script%20setup"+language:Vue+in:file+repo:rstudio/connect'),
-    per_page = 100
-  ) |> 
-  req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
-  req_perform() |>
-  resp_body_json()
+composition_results <- request_all_pages("script%20setup")
 
 migrated_count <- composition_results$total_count
 migrated_components <- composition_results$items |>
@@ -43,15 +47,7 @@ migrated_components <- composition_results$items |>
 ```
 
 ```{r search-options-vue}
-resp_options_vue <- request(GITHUB_API_HOST) |> 
-  req_url_path(GITHUB_SEARCH_PATH) |>
-  req_url_query(
-    q = I('"export%20default%20{"+language:Vue+in:file+repo:rstudio/connect'),
-    per_page = 100
-  ) |> 
-  req_auth_basic("mcgaffin", GITHUB_API_KEY) |>
-  req_perform() |>
-  resp_body_json()
+resp_options_vue <- request_all_pages("export%20default%20{")
 
 vue_options_total <- resp_options_vue$total_count
 vue_components <- resp_options_vue$items |>
