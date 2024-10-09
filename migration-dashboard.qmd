@@ -1,7 +1,7 @@
 ---
 title: Composition API Migration Dashboard
-format:
-  dashboard
+format: dashboard
+theme: materia
 ---
 
 ```{r setup}
@@ -12,6 +12,7 @@ library(jsonlite)
 library(kableExtra)
 library(knitr)
 library(purrr)
+library(shiny)
 library(stringr)
 library(tibble)
 
@@ -21,7 +22,7 @@ GITHUB_SEARCH_PATH <- 'search/code'
 GITHUB_USER <- Sys.getenv("GITHUB_USER")
 
 get_names_from_git_response <- function(item) {
-  item$path |> str_replace('ui/dashboard/src/', '')
+  name <- item$path |> str_replace('ui/dashboard/src/', '')
 }
 
 request_all_pages <- function(search_str) {
@@ -76,8 +77,8 @@ The Composition API count appears to be accurate, but the Options API count is u
 ```{r}
 #| content: valuebox
 #| title: "Composition API Components"
-#| icon: check
-#| color: primary
+#| icon: check-lg
+#| color: success
 
 composition_count
 ```
