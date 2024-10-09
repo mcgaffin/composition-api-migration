@@ -4,7 +4,7 @@ format:
   dashboard
 ---
 
-```{r search-migration-complete}
+```{r setup}
 library(dplyr)
 library(glue)
 library(httr2)
@@ -15,8 +15,8 @@ library(purrr)
 library(stringr)
 library(tibble)
 
-GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
 GITHUB_API_HOST <- 'https://api.github.com'
+GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
 GITHUB_SEARCH_PATH <- 'search/code'
 GITHUB_USER <- Sys.getenv("GITHUB_USER")
 
@@ -37,21 +37,29 @@ request_all_pages <- function(search_str) {
     resp_body_json()
 
 }
+
+render_table <- function(component_list) {
+  data.frame(Components = unlist(component_list)) |>
+    as_tibble() |>
+    arrange(Components) |>
+    kbl() |>
+    kable_styling()
+}
 ```
 
-```{r composition-query}
+```{r composition-components}
 composition_results <- request_all_pages("script%20setup")
 
-migrated_count <- composition_results$total_count
-migrated_components <- composition_results$items |>
+composition_count <- composition_results$total_count
+composition_components <- composition_results$items |>
   map(get_names_from_git_response)
 ```
 
-```{r search-options-vue}
+```{r option-components}
 resp_options_vue <- request_all_pages("export%20default%20{")
 
 vue_options_total <- resp_options_vue$total_count
-vue_components <- resp_options_vue$items |>
+option_components <- resp_options_vue$items |>
   map(get_names_from_git_response)
 ```
 
@@ -69,7 +77,7 @@ The Composition API count appears to be accurate, but the Options API count is u
 #| icon: check
 #| color: primary
 
-migrated_count
+composition_count
 ```
 
 ```{r}
@@ -86,19 +94,11 @@ vue_options_total
 ```{r}
 #| title: "Composition API"
 
-tbsy <- data.frame(Components = unlist(migrated_components)) |>
-  as_tibble() |>
-  arrange(Components)
-
-tbsy |> kbl() |> kable_styling()
+composition_components |> render_table()
 ```
 
 ```{r}
 #| title: Options API
 
-data.frame(Components = unlist(vue_components)) |>
-  as_tibble() |>
-  arrange(Components) |>
-  kbl() |>
-  kable_styling()
+option_components |> render_table()
 ```
