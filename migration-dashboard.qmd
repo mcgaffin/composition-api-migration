@@ -80,7 +80,7 @@ The Composition API count appears to be accurate, but the Options API count is u
 ```{r}
 #| content: valuebox
 #| title: "Completion Progress"
-#| icon: percent
+#| icon: speedometer
 #| color: primary
 
 progress <- (composition_count / (composition_count + option_count) * 100) |> round()
