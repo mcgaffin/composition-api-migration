@@ -23,6 +23,10 @@ GITHUB_USER <- Sys.getenv("GITHUB_USER")
 
 get_names_from_git_response <- function(item) {
   name <- item$path |> str_replace('ui/dashboard/src/', '')
+  # url <- item$html_url
+
+  # glue('<a href="{url}" target="_blank">{name}</a>')
+  # tags$a(href = url, target = '_blank', name)
 }
 
 request_all_pages <- function(search_str) {
@@ -38,7 +42,6 @@ request_all_pages <- function(search_str) {
     req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
     req_perform() |>
     resp_body_json()
-
 }
 
 render_table <- function(component_list) {
@@ -73,6 +76,16 @@ The Composition API count appears to be accurate, but the Options API count is u
 :::
 
 ## Row
+
+```{r}
+#| content: valuebox
+#| title: "Completion Progress"
+#| icon: percent
+#| color: primary
+
+progress <- (composition_count / (composition_count + option_count) * 100) |> round()
+glue('{progress}%')
+```
 
 ```{r}
 #| content: valuebox
