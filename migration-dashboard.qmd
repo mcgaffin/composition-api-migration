@@ -79,7 +79,7 @@ The Composition API count appears to be accurate, but the Options API count is u
 
 ```{r}
 #| content: valuebox
-#| title: "Completion Progress"
+#| title: "Migration Progress"
 #| icon: speedometer
 #| color: primary
 
