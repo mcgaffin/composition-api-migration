@@ -29,19 +29,45 @@ get_names_from_git_response <- function(item) {
   # tags$a(href = url, target = '_blank', name)
 }
 
+has_more_items <- function(resp) {
+  has_link_header <- resp_header_exists(resp, 'link')
+  if (!has_link_header) {
+    return(FALSE)
+  }
+
+  link_hdr <- resp |> resp_header('link')
+  grepl('rel="last"', link_hdr)
+}
+
 request_all_pages <- function(search_str) {
   query <- glue('"{search_str}"+language:Vue+in:file+repo:rstudio/connect')
 
-  #TODO: actually request all pages.
-  agg_results <- request(GITHUB_API_HOST) |> 
-    req_url_path(GITHUB_SEARCH_PATH) |>
-    req_url_query(
-      q = I(query),
-      per_page = 100
-    ) |> 
-    req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
-    req_perform() |>
-    resp_body_json()
+  total_count <- 0
+  request_page <- 1
+  items <- list()
+  repeat {
+    resp <- request(GITHUB_API_HOST) |> 
+      req_url_path(GITHUB_SEARCH_PATH) |>
+      req_url_query(
+        q = I(query),
+        per_page = 100,
+        page = request_page
+      ) |> 
+      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
+      req_perform()
+      
+    json_results <- resp |> resp_body_json()
+    total_count <- json_results$total_count
+    items <- c(items, json_results$items)
+
+    if (!has_more_items(resp)) {
+      break
+    }
+
+    request_page <- request_page + 1
+  }
+  
+  list(count = total_count, items = items)
 }
 
 render_table <- function(component_list) {
@@ -56,7 +82,7 @@ render_table <- function(component_list) {
 ```{r composition-components}
 composition_results <- request_all_pages("script%20setup")
 
-composition_count <- composition_results$total_count
+composition_count <- composition_results$count
 composition_components <- composition_results$items |>
   map(get_names_from_git_response)
 ```
@@ -64,7 +90,7 @@ composition_components <- composition_results$items |>
 ```{r option-components}
 option_results <- request_all_pages("export%20default%20{")
 
-option_count <- option_results$total_count
+option_count <- option_results$count
 option_components <- option_results$items |>
   map(get_names_from_git_response)
 ```
@@ -72,7 +98,7 @@ option_components <- option_results$items |>
 ::: {.callout-warning}
 ## Work In Progress
 
-The Composition API count appears to be accurate, but the Options API count is unconfirmed. The list of components is not really working at the moment.
+The Composition API count appears to be accurate, but the Options API count is unconfirmed. The list of components might be missing a few components.
 :::
 
 ## Row
