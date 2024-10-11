@@ -95,15 +95,6 @@ option_components <- option_results$items |>
   map(get_names_from_git_response)
 ```
 
-::: {.callout-warning}
-## Work In Progress
-
-##### notes
-- the Composition API count appears to be accurate.
-- the Options API count is unconfirmed.
-- the list of components might be missing a few components.
-:::
-
 ## Row
 
 ```{r}
