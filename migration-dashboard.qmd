@@ -98,7 +98,10 @@ option_components <- option_results$items |>
 ::: {.callout-warning}
 ## Work In Progress
 
-The Composition API count appears to be accurate, but the Options API count is unconfirmed. The list of components might be missing a few components.
+##### notes
+- the Composition API count appears to be accurate.
+- the Options API count is unconfirmed.
+- the list of components might be missing a few components.
 :::
 
 ## Row
