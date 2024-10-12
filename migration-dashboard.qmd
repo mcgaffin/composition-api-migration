@@ -1,6 +1,10 @@
 ---
 title: Composition API Migration Dashboard
-format: dashboard
+format:
+  dashboard:
+    logo: images/vuejs-forward-logo.png
+    nav-buttons: [github]
+
 theme: materia
 ---
 
