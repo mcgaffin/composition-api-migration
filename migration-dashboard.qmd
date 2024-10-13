@@ -3,7 +3,9 @@ title: Composition API Migration Dashboard
 format:
   dashboard:
     logo: images/vuejs-forward-logo.png
-    nav-buttons: [github]
+    nav-buttons:
+      - icon: github
+        href: https://github.com/mcgaffin/composition-api-migration
 theme: materia
 ---
 
