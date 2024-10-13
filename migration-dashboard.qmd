@@ -4,7 +4,6 @@ format:
   dashboard:
     logo: images/vuejs-forward-logo.png
     nav-buttons: [github]
-
 theme: materia
 ---
 
@@ -16,7 +15,6 @@ library(jsonlite)
 library(kableExtra)
 library(knitr)
 library(purrr)
-library(shiny)
 library(stringr)
 library(tibble)
 
@@ -27,10 +25,9 @@ GITHUB_USER <- Sys.getenv("GITHUB_USER")
 
 get_names_from_git_response <- function(item) {
   name <- item$path |> str_replace('ui/src/', '')
-  # url <- item$html_url
+  url <- item$html_url
 
-  # glue('<a href="{url}" target="_blank">{name}</a>')
-  # tags$a(href = url, target = '_blank', name)
+  glue('<a href="{url}" target="_blank">{name}</a>')
 }
 
 has_more_items <- function(resp) {
@@ -78,8 +75,8 @@ render_table <- function(component_list) {
   data.frame(Components = unlist(component_list)) |>
     as_tibble() |>
     arrange(Components) |>
-    kbl() |>
-    kable_styling()
+    kbl(escape = FALSE) |>
+    kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
 }
 ```
 
