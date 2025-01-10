@@ -44,7 +44,7 @@ has_more_items <- function(resp) {
 }
 
 request_all_pages <- function(search_str) {
-  query <- glue('"{search_str}"+language:Vue+in:file+repo:rstudio/connect')
+  query <- glue('"{search_str}"+language:Vue+in:file+repo:posit-dev/connect')
 
   total_count <- 0
   request_page <- 1
