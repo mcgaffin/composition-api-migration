@@ -1,0 +1,271 @@
+---
+title: TypeScript Migration Dashboard
+format:
+  dashboard:
+    logo: images/ts-logo-256.svg
+    nav-buttons:
+      - icon: github
+        href: https://github.com/mcgaffin/composition-api-migration
+        target: _parent
+theme: materia
+---
+
+```{r setup}
+library(dplyr)
+library(glue)
+library(httr2)
+library(jsonlite)
+library(kableExtra)
+library(knitr)
+library(purrr)
+library(stringr)
+library(tibble)
+
+GITHUB_API_HOST <- 'https://api.github.com'
+GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
+GITHUB_SEARCH_PATH <- 'search/code'
+GITHUB_USER <- Sys.getenv("GITHUB_USER")
+
+get_names_from_git_response <- function(item) {
+  name <- item$path |> str_replace('ui/src/', '')
+  url <- item$html_url
+
+  glue('<a href="{url}" target="_blank">{name}</a>')
+}
+
+has_more_items <- function(resp) {
+  has_link_header <- resp_header_exists(resp, 'link')
+  if (!has_link_header) {
+    return(FALSE)
+  }
+
+  link_hdr <- resp |> resp_header('link')
+  grepl('rel="last"', link_hdr)
+}
+
+request_all_pages <- function(search_str, language = NULL, extension = NULL) {
+  query_parts <- c(
+    glue('"{search_str}"'),
+    'in:file',
+    'repo:posit-dev/connect'
+  )
+
+  if (!is.null(language)) {
+    query_parts <- c(query_parts, glue('language:{language}'))
+  }
+
+  if (!is.null(extension)) {
+    query_parts <- c(query_parts, glue('extension:{extension}'))
+  }
+
+  query <- paste(query_parts, collapse = '+')
+
+  total_count <- 0
+  request_page <- 1
+  items <- list()
+  repeat {
+    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
+    resp <- request(GITHUB_API_HOST) |>
+      req_url_path(GITHUB_SEARCH_PATH) |>
+      req_url_query(
+        q = I(query),
+        per_page = 100,
+        page = request_page
+      ) |>
+      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
+      #req_throttle(rate = 10 / 60) |> 
+      req_perform()
+
+    json_results <- resp |> resp_body_json()
+    total_count <- json_results$total_count
+    items <- c(items, json_results$items)
+
+    if (!has_more_items(resp)) {
+      break
+    }
+
+    request_page <- request_page + 1
+  }
+
+  list(count = total_count, items = items)
+}
+
+request_by_extension <- function(extension) {
+  search_term <- if (extension == "ts") "import" else "import"
+  query <- glue('"{search_term}"+extension:{extension}+repo:posit-dev/connect+path:ui/src')
+
+  total_count <- 0
+  request_page <- 1
+  items <- list()
+  repeat {
+    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
+    resp <- request(GITHUB_API_HOST) |>
+      req_url_path(GITHUB_SEARCH_PATH) |>
+      req_url_query(
+        q = I(query),
+        per_page = 100,
+        page = request_page
+      ) |>
+      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
+      #req_throttle(rate = 10 / 60) |> 
+      req_perform()
+
+    json_results <- resp |> resp_body_json()
+    total_count <- json_results$total_count
+    items <- c(items, json_results$items)
+
+    if (!has_more_items(resp)) {
+      break
+    }
+
+    request_page <- request_page + 1
+  }
+
+  list(count = total_count, items = items)
+}
+
+render_table <- function(component_list) {
+  if (length(component_list) == 0) {
+    return(
+      data.frame(Components = character(0)) |>
+        kbl(escape = FALSE) |>
+        kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
+    )
+  }
+
+  data.frame(Components = unlist(component_list)) |>
+    as_tibble() |>
+    arrange(Components) |>
+    kbl(escape = FALSE) |>
+    kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
+}
+```
+
+```{r typescript-vue-components}
+# Vue components with TypeScript (have lang="ts" in script setup)
+ts_vue_results <- request_all_pages('setup%20lang', language = "Vue")
+
+ts_vue_count <- ts_vue_results$count
+ts_vue_components <- ts_vue_results$items |>
+  map(get_names_from_git_response)
+```
+
+```{r javascript-vue-components}
+# All Vue components using Composition API (script setup)
+all_vue_results <- request_all_pages("script%20setup", language = "Vue")
+
+all_vue_count <- all_vue_results$count
+all_vue_items <- all_vue_results$items
+
+# Filter out TypeScript Vue components to get JavaScript Vue components
+ts_vue_paths <- ts_vue_results$items |> map_chr(~.x$path)
+js_vue_items <- all_vue_items |> keep(~!(.x$path %in% ts_vue_paths))
+
+js_vue_count <- length(js_vue_items)
+js_vue_components <- js_vue_items |>
+  map(get_names_from_git_response)
+```
+
+```{r typescript-files}
+# TypeScript files (*.ts)
+ts_file_results <- request_by_extension("ts")
+
+ts_file_count <- ts_file_results$count
+ts_files <- ts_file_results$items |>
+  map(get_names_from_git_response)
+```
+
+```{r javascript-files}
+# JavaScript files (*.js)
+js_file_results <- request_by_extension("js")
+
+js_file_count <- js_file_results$count
+js_files <- js_file_results$items |>
+  map(get_names_from_git_response)
+```
+
+## Row
+
+```{r}
+#| content: valuebox
+#| title: "Vue TypeScript Progress"
+#| icon: filetype-tsx
+#| color: primary
+
+vue_ts_progress <- (ts_vue_count / (ts_vue_count + js_vue_count) * 100) |> round()
+glue('{vue_ts_progress}%')
+```
+
+```{r}
+#| content: valuebox
+#| title: "File TypeScript Progress"
+#| icon: file-earmark-code
+#| color: primary
+
+file_ts_progress <- (ts_file_count / (ts_file_count + js_file_count) * 100) |> round()
+glue('{file_ts_progress}%')
+```
+
+## Row
+
+```{r}
+#| content: valuebox
+#| title: "TypeScript Vue Components"
+#| icon: check-lg
+#| color: success
+
+ts_vue_count
+```
+
+```{r}
+#| content: valuebox
+#| title: "JavaScript Vue Components"
+#| icon: hourglass
+#| color: warning
+
+js_vue_count
+```
+
+```{r}
+#| content: valuebox
+#| title: "TypeScript Files"
+#| icon: check-lg
+#| color: success
+
+ts_file_count
+```
+
+```{r}
+#| content: valuebox
+#| title: "JavaScript Files"
+#| icon: hourglass
+#| color: warning
+
+js_file_count
+```
+
+## Row {.tabset}
+
+```{r}
+#| title: "TypeScript Vue Components"
+
+ts_vue_components |> render_table()
+```
+
+```{r}
+#| title: "JavaScript Vue Components"
+
+js_vue_components |> render_table()
+```
+
+```{r}
+#| title: "TypeScript Files"
+
+ts_files |> render_table()
+```
+
+```{r}
+#| title: "JavaScript Files"
+
+js_files |> render_table()
+```
