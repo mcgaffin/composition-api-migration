@@ -49,6 +49,7 @@ request_all_pages <- function(search_str) {
   request_page <- 1
   items <- list()
   repeat {
+    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
     resp <- request(GITHUB_API_HOST) |> 
       req_url_path(GITHUB_SEARCH_PATH) |>
       req_url_query(
