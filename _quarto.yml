@@ -16,8 +16,6 @@ website:
         href: testing-library-migration.qmd
       - text: "Pinia"
         href: pinia-migration.qmd
-      # - text: "TypeScript Migration"
-      #   href: typescript-dashboard.qmd
 
 format:
   html:

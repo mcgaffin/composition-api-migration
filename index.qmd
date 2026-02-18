@@ -4,6 +4,7 @@ subtitle: "Track progress across active UI migrations"
 format:
   html:
     page-layout: full
+    css: styles.css
 ---
 
 ::: {.grid}
@@ -20,6 +21,21 @@ Migrating Vue components from Options API to Composition API with `<script setup
 
 [View Dashboard](migration-dashboard.qmd){.btn .btn-primary}
 [Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/COMPOSITION_API_MIGRATION.md){.btn .btn-outline-info}
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.card .h-100}
+::: {.card-header}
+
+{{< fa arrows-rotate >}} Typescript
+
+:::
+::: {.card-body}
+Migrating to Typescript
+
+[View Dashboard](typescript-dashboard.qmd){.btn .btn-primary}
 :::
 :::
 :::
