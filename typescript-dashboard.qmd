@@ -7,7 +7,6 @@ format:
       - icon: github
         href: https://github.com/mcgaffin/composition-api-migration
         target: _parent
-theme: materia
 ---
 
 ```{r setup}

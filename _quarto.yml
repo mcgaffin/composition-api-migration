@@ -8,6 +8,8 @@ website:
     left:
       - text: "Composition API"
         href: migration-dashboard.qmd
+      - text: "Typescript"
+        href: typescript-dashboard.qmd
       - text: "Tailwind"
         href: tailwind-migration.qmd
       - text: "Testing Library"
