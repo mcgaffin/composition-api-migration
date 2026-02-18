@@ -1,0 +1,12 @@
+---
+title: Tailwind Migration
+format:
+  dashboard:
+    logo: images/vuejs-forward-logo.png
+    nav-buttons:
+      - icon: github
+        href: https://github.com/mcgaffin/composition-api-migration
+        target: _parent
+---
+
+## Tailwind Migration

@@ -4,3 +4,9 @@ migration-dashboard.html
 .Renviron
 .Rhistory
 .DS_Store
+
+/.quarto/
+**/*.quarto_ipynb
+/_site/
+/.posit/
+/site_libs/

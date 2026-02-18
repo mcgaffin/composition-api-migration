@@ -1,0 +1,115 @@
+/* Migration Dashboard Homepage Styles */
+
+/* Light mode colors (default) */
+:root {
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-header-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  --card-shadow-hover: rgba(0, 0, 0, 0.1);
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --btn-outline-border: #cbd5e1;
+  --btn-outline-hover-bg: #f1f5f9;
+  --btn-outline-hover-border: #94a3b8;
+  --btn-outline-hover-text: #475569;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --card-header-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    --card-shadow-hover: rgba(0, 0, 0, 0.3);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent: #818cf8;
+    --accent-hover: #a5b4fc;
+    --btn-outline-border: #475569;
+    --btn-outline-hover-bg: #334155;
+    --btn-outline-hover-border: #64748b;
+    --btn-outline-hover-text: #e2e8f0;
+  }
+}
+
+.grid {
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--card-shadow-hover);
+}
+
+.card-header {
+  background: var(--card-header-bg);
+  border-bottom: 1px solid var(--card-border);
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem 0.75rem 0 0;
+  color: var(--text-primary);
+}
+
+.card-header i {
+  margin-right: 0.5rem;
+  color: var(--accent);
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-body p {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.card-body .btn {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: var(--btn-outline-border);
+  background-color: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--btn-outline-hover-bg);
+  border-color: var(--btn-outline-hover-border);
+  color: var(--btn-outline-hover-text);
+}
+
+/* Title styling */
+.title {
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+}
