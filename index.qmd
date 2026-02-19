@@ -6,16 +6,14 @@ format:
     page-layout: full
     css: styles.css
 ---
-
 ::: {.grid}
 
 ::: {.g-col-12 .g-col-md-6}
 ::: {.card .h-100}
 ::: {.card-header}
-
 {{< fa arrows-rotate >}} Composition API
-
 :::
+
 ::: {.card-body}
 Migrating Vue components from Options API to Composition API with `<script setup>` syntax.
 
@@ -28,10 +26,9 @@ Migrating Vue components from Options API to Composition API with `<script setup
 ::: {.g-col-12 .g-col-md-6}
 ::: {.card .h-100}
 ::: {.card-header}
-
 {{< fa arrows-rotate >}} Typescript
-
 :::
+
 ::: {.card-body}
 Migrating to Typescript
 
@@ -45,6 +42,7 @@ Migrating to Typescript
 ::: {.card-header}
 {{< fa palette >}} Tailwind CSS
 :::
+
 ::: {.card-body}
 Transitioning from legacy CSS to Tailwind utility classes for consistent styling.
 
@@ -58,11 +56,13 @@ Transitioning from legacy CSS to Tailwind utility classes for consistent styling
 ::: {.card-header}
 {{< fa flask-vial >}} Testing Library
 :::
+
 ::: {.card-body}
 Updating component tests to use Vue Testing Library patterns.
 
 [View Dashboard](testing-library-migration.qmd){.btn .btn-primary}
 [Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/TESTING_LIBRARY_GUIDE.md){.btn .btn-outline-info}
+
 :::
 :::
 :::
@@ -72,11 +72,13 @@ Updating component tests to use Vue Testing Library patterns.
 ::: {.card-header}
 {{< fa database >}} Pinia
 :::
+
 ::: {.card-body}
 Migrating state management from Vuex to Pinia stores.
 
 [View Dashboard](pinia-migration.qmd){.btn .btn-primary}
 [Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/PINIA_MIGRATION.md){.btn .btn-outline-info}
+
 :::
 :::
 :::
