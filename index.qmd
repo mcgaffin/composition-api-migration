@@ -54,6 +54,22 @@ Transitioning from legacy CSS to Tailwind utility classes for consistent styling
 ::: {.g-col-12 .g-col-md-6}
 ::: {.card .h-100}
 ::: {.card-header}
+{{< fa database >}} Pinia
+:::
+
+::: {.card-body}
+Migrating state management from Vuex to Pinia stores.
+
+[View Dashboard](pinia-migration.qmd){.btn .btn-primary}
+[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/PINIA_MIGRATION.md){.btn .btn-outline-info}
+
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.card .h-100}
+::: {.card-header}
 {{< fa flask-vial >}} Testing Library
 :::
 
@@ -67,20 +83,5 @@ Updating component tests to use Vue Testing Library patterns.
 :::
 :::
 
-::: {.g-col-12 .g-col-md-6}
-::: {.card .h-100}
-::: {.card-header}
-{{< fa database >}} Pinia
-:::
-
-::: {.card-body}
-Migrating state management from Vuex to Pinia stores.
-
-[View Dashboard](pinia-migration.qmd){.btn .btn-primary}
-[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/PINIA_MIGRATION.md){.btn .btn-outline-info}
-
-:::
-:::
-:::
 
 :::

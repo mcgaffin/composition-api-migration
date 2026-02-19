@@ -4,6 +4,7 @@ migration-dashboard.html
 .Renviron
 .Rhistory
 .DS_Store
+.rmarkdown
 
 /.quarto/
 **/*.quarto_ipynb

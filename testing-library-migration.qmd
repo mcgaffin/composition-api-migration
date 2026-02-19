@@ -1,5 +1,5 @@
 ---
-title: Testing Library Migration
+title: Testing Library Migration Dashboard
 format:
   dashboard:
     logo: images/vuejs-forward-logo.png
@@ -9,4 +9,150 @@ format:
         target: _parent
 ---
 
-## Testing Library Migration
+```{r setup}
+library(dplyr)
+library(glue)
+library(httr2)
+library(jsonlite)
+library(kableExtra)
+library(knitr)
+library(purrr)
+library(stringr)
+library(tibble)
+
+GITHUB_API_HOST <- 'https://api.github.com'
+GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
+GITHUB_SEARCH_PATH <- 'search/code'
+GITHUB_USER <- Sys.getenv("GITHUB_USER")
+
+get_names_from_git_response <- function(item) {
+  name <- item$path |> str_replace('ui/src/', '')
+  url <- item$html_url
+
+  glue('<a href="{url}" target="_blank">{name}</a>')
+}
+
+has_more_items <- function(resp) {
+  has_link_header <- resp_header_exists(resp, 'link')
+  if (!has_link_header) {
+    return(FALSE)
+  }
+
+  link_hdr <- resp |> resp_header('link')
+  grepl('rel="last"', link_hdr)
+}
+
+request_test_files <- function(search_str) {
+  # Search for test files matching the pattern
+  query <- glue('"{search_str}"+in:file+repo:posit-dev/connect+path:ui/src+extension:ts')
+
+  total_count <- 0
+  request_page <- 1
+  items <- list()
+  repeat {
+    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
+    resp <- request(GITHUB_API_HOST) |>
+      req_url_path(GITHUB_SEARCH_PATH) |>
+      req_url_query(
+        q = I(query),
+        per_page = 100,
+        page = request_page
+      ) |>
+      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
+      req_perform()
+
+    json_results <- resp |> resp_body_json()
+    total_count <- json_results$total_count
+    items <- c(items, json_results$items)
+
+    if (!has_more_items(resp)) {
+      break
+    }
+
+    request_page <- request_page + 1
+  }
+
+  # Filter to only .test.ts or .test.js files
+  test_items <- items |> keep(~grepl('\\.test\\.(ts|js)$', .x$path))
+
+  list(count = length(test_items), items = test_items)
+}
+
+render_table <- function(file_list) {
+  if (length(file_list) == 0) {
+    return(
+      data.frame(TestSuites = character(0)) |>
+        kbl(escape = FALSE) |>
+        kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
+    )
+  }
+
+  data.frame(TestSuites = unlist(file_list)) |>
+    as_tibble() |>
+    arrange(TestSuites) |>
+    kbl(escape = FALSE) |>
+    kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
+}
+```
+
+```{r testing-library-suites}
+# Testing Library test suites (import render from @testing-library)
+testing_library_results <- request_test_files("@testing-library")
+
+testing_library_count <- testing_library_results$count
+testing_library_suites <- testing_library_results$items |>
+  map(get_names_from_git_response)
+```
+
+```{r vue-test-utils-suites}
+# Vue Test Utils test suites (import mount from @vue/test-utils)
+vue_test_utils_results <- request_test_files("@vue/test-utils")
+
+vue_test_utils_count <- vue_test_utils_results$count
+vue_test_utils_suites <- vue_test_utils_results$items |>
+  map(get_names_from_git_response)
+```
+
+## Row
+
+```{r}
+#| content: valuebox
+#| title: "Testing Library Migration Progress"
+#| icon: speedometer
+#| color: primary
+
+progress <- (testing_library_count / (testing_library_count + vue_test_utils_count) * 100) |> round()
+glue('{progress}%')
+```
+
+```{r}
+#| content: valuebox
+#| title: "Testing Library Suites"
+#| icon: check-lg
+#| color: success
+
+testing_library_count
+```
+
+```{r}
+#| content: valuebox
+#| title: "Vue Test Utils Suites"
+#| icon: hourglass
+#| color: warning
+
+vue_test_utils_count
+```
+
+## Row {.tabset}
+
+```{r}
+#| title: "Testing Library Suites"
+
+testing_library_suites |> render_table()
+```
+
+```{r}
+#| title: "Vue Test Utils Suites"
+
+vue_test_utils_suites |> render_table()
+```
