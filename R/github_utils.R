@@ -57,7 +57,6 @@ request_github_search <- function(query) {
   items <- list()
 
   repeat {
-    Sys.sleep(8)
     resp <- request(GITHUB_API_HOST) |>
       req_url_path(GITHUB_SEARCH_PATH) |>
       req_url_query(
@@ -67,6 +66,11 @@ request_github_search <- function(query) {
       ) |>
       req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
       req_throttle(capacity = 9, fill_time_s = 60) |>
+      req_retry(
+        max_tries = 3,
+        is_transient = \(resp) resp_status(resp) %in% c(403, 429, 503),
+        backoff = ~ 60
+      ) |>
       req_perform()
 
     json_results <- resp |> resp_body_json()
