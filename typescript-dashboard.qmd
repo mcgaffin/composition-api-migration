@@ -65,7 +65,7 @@ js_files <- js_file_results$items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Vue TypeScript Progress"
+#| title: "Vue Component Progress"
 #| icon: filetype-tsx
 #| color: primary
 
@@ -74,7 +74,7 @@ glue('{calculate_progress(ts_vue_count, js_vue_count)}%')
 
 ```{r}
 #| content: valuebox
-#| title: "File TypeScript Progress"
+#| title: "File Progress"
 #| icon: file-earmark-code
 #| color: primary
 

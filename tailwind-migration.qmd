@@ -42,7 +42,7 @@ tailwind_components <- tailwind_items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Tailwind Migration Progress"
+#| title: "Migration Progress"
 #| icon: speedometer
 #| color: primary
 
@@ -76,7 +76,7 @@ tailwind_components |> render_table(column_name = "Components")
 ```
 
 ```{r}
-#| title: "Components with <style>"
+#| title: "SCSS Components"
 
 style_components |> render_table(column_name = "Components")
 ```

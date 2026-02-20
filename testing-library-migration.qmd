@@ -1,5 +1,5 @@
 ---
-title: Testing Library Migration Dashboard
+title: Testing Library Migration Dashboard - {{< fa flask >}} Unconfirmed (maybe inaccurate)
 format:
   dashboard:
     logo: images/vuejs-forward-logo.png
@@ -44,7 +44,7 @@ vue_test_utils_suites <- vue_test_utils_results$items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Testing Library Migration Progress"
+#| title: "Migration Progress"
 #| icon: speedometer
 #| color: primary
 

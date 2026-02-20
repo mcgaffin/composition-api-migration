@@ -35,7 +35,7 @@ vuex_stores <- vuex_results$items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Pinia Migration Progress"
+#| title: "Migration Progress"
 #| icon: speedometer
 #| color: primary
 
