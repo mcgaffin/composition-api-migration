@@ -57,7 +57,7 @@ request_github_search <- function(query) {
   items <- list()
 
   repeat {
-    Sys.sleep(8) # Stay under 10 requests/min rate limit
+    Sys.sleep(8)
     resp <- request(GITHUB_API_HOST) |>
       req_url_path(GITHUB_SEARCH_PATH) |>
       req_url_query(
@@ -66,6 +66,7 @@ request_github_search <- function(query) {
         page = request_page
       ) |>
       req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
+      req_throttle(capacity = 9, fill_time_s = 60) |>
       req_perform()
 
     json_results <- resp |> resp_body_json()
@@ -73,6 +74,9 @@ request_github_search <- function(query) {
     items <- c(items, json_results$items)
 
     if (!has_more_items(resp)) {
+      # To ensure that the next dashboard will not exceed rate limits,
+      # pause for a moment. Otherwise, `req_throttle` won't know about
+      # all the requests that have just happened for this dashboard.
       break
     }
 
@@ -94,7 +98,8 @@ request_all_pages <- function(search_str,
                               repo = "posit-dev/connect",
                               language = NULL,
                               path = NULL,
-                              extension = NULL) {
+                              extension = NULL,
+                              literal = NULL) {
   query_parts <- c(
     glue('"{search_str}"'),
     "in:file",
@@ -111,6 +116,10 @@ request_all_pages <- function(search_str,
 
   if (!is.null(extension)) {
     query_parts <- c(query_parts, glue("extension:{extension}"))
+  }
+
+  if (!is.null(literal)) {
+    query_parts <- c(query_parts, glue(literal))
   }
 
   query <- paste(query_parts, collapse = "+")
