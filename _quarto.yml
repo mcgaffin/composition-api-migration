@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "Migrations"
+  title: "{{< fa home >}}"
   navbar:
     background: primary
     left:
@@ -21,10 +21,10 @@ format:
   html:
     theme:
       light: materia
-      dark: darkly
+      dark: superhero
     respect-user-color-scheme: true
   dashboard:
     theme:
       light: materia
-      dark: darkly
+      dark: superhero
     respect-user-color-scheme: true
