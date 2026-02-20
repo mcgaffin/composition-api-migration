@@ -10,139 +10,17 @@ format:
 ---
 
 ```{r setup}
-library(dplyr)
-library(glue)
-library(httr2)
-library(jsonlite)
-library(kableExtra)
-library(knitr)
-library(purrr)
-library(stringr)
-library(tibble)
+source("R/github_utils.R")
 
-GITHUB_API_HOST <- 'https://api.github.com'
-GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
-GITHUB_SEARCH_PATH <- 'search/code'
-GITHUB_USER <- Sys.getenv("GITHUB_USER")
-
-get_names_from_git_response <- function(item) {
-  name <- item$path |> str_replace('ui/src/', '')
-  url <- item$html_url
-
-  glue('<a href="{url}" target="_blank">{name}</a>')
-}
-
-has_more_items <- function(resp) {
-  has_link_header <- resp_header_exists(resp, 'link')
-  if (!has_link_header) {
-    return(FALSE)
-  }
-
-  link_hdr <- resp |> resp_header('link')
-  grepl('rel="last"', link_hdr)
-}
-
-request_all_pages <- function(search_str, language = NULL, extension = NULL) {
-  query_parts <- c(
-    glue('"{search_str}"'),
-    'in:file',
-    'repo:posit-dev/connect'
-  )
-
-  if (!is.null(language)) {
-    query_parts <- c(query_parts, glue('language:{language}'))
-  }
-
-  if (!is.null(extension)) {
-    query_parts <- c(query_parts, glue('extension:{extension}'))
-  }
-
-  query <- paste(query_parts, collapse = '+')
-
-  total_count <- 0
-  request_page <- 1
-  items <- list()
-  repeat {
-    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
-    resp <- request(GITHUB_API_HOST) |>
-      req_url_path(GITHUB_SEARCH_PATH) |>
-      req_url_query(
-        q = I(query),
-        per_page = 100,
-        page = request_page
-      ) |>
-      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
-      #req_throttle(rate = 10 / 60) |> 
-      req_perform()
-
-    json_results <- resp |> resp_body_json()
-    total_count <- json_results$total_count
-    items <- c(items, json_results$items)
-
-    if (!has_more_items(resp)) {
-      break
-    }
-
-    request_page <- request_page + 1
-  }
-
-  list(count = total_count, items = items)
-}
-
-request_by_extension <- function(extension) {
-  search_term <- if (extension == "ts") "import" else "import"
-  query <- glue('"{search_term}"+extension:{extension}+repo:posit-dev/connect+path:ui/src')
-
-  total_count <- 0
-  request_page <- 1
-  items <- list()
-  repeat {
-    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
-    resp <- request(GITHUB_API_HOST) |>
-      req_url_path(GITHUB_SEARCH_PATH) |>
-      req_url_query(
-        q = I(query),
-        per_page = 100,
-        page = request_page
-      ) |>
-      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
-      #req_throttle(rate = 10 / 60) |> 
-      req_perform()
-
-    json_results <- resp |> resp_body_json()
-    total_count <- json_results$total_count
-    items <- c(items, json_results$items)
-
-    if (!has_more_items(resp)) {
-      break
-    }
-
-    request_page <- request_page + 1
-  }
-
-  list(count = total_count, items = items)
-}
-
-render_table <- function(component_list) {
-  if (length(component_list) == 0) {
-    return(
-      data.frame(Components = character(0)) |>
-        kbl(escape = FALSE) |>
-        kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
-    )
-  }
-
-  data.frame(Components = unlist(component_list)) |>
-    as_tibble() |>
-    arrange(Components) |>
-    kbl(escape = FALSE) |>
-    kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
+request_by_extension <- function(ext) {
+  query <- glue('"import"+extension:{ext}+repo:posit-dev/connect+path:ui/src')
+  request_github_search(query)
 }
 ```
 
 ```{r typescript-vue-components}
 # Vue components with TypeScript (have lang="ts" in script setup)
-ts_vue_results <- request_all_pages('setup%20lang', language = "Vue")
+ts_vue_results <- request_all_pages("setup%20lang", language = "Vue")
 
 ts_vue_count <- ts_vue_results$count
 ts_vue_components <- ts_vue_results$items |>
@@ -187,22 +65,20 @@ js_files <- js_file_results$items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Vue TypeScript Progress"
+#| title: "Vue Component Progress"
 #| icon: filetype-tsx
 #| color: primary
 
-vue_ts_progress <- (ts_vue_count / (ts_vue_count + js_vue_count) * 100) |> round()
-glue('{vue_ts_progress}%')
+glue('{calculate_progress(ts_vue_count, js_vue_count)}%')
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "File TypeScript Progress"
+#| title: "File Progress"
 #| icon: file-earmark-code
 #| color: primary
 
-file_ts_progress <- (ts_file_count / (ts_file_count + js_file_count) * 100) |> round()
-glue('{file_ts_progress}%')
+glue('{calculate_progress(ts_file_count, js_file_count)}%')
 ```
 
 ## Row
@@ -248,23 +124,23 @@ js_file_count
 ```{r}
 #| title: "TypeScript Vue Components"
 
-ts_vue_components |> render_table()
+ts_vue_components |> render_table(column_name = "Components")
 ```
 
 ```{r}
 #| title: "JavaScript Vue Components"
 
-js_vue_components |> render_table()
+js_vue_components |> render_table(column_name = "Components")
 ```
 
 ```{r}
 #| title: "TypeScript Files"
 
-ts_files |> render_table()
+ts_files |> render_table(column_name = "Components")
 ```
 
 ```{r}
 #| title: "JavaScript Files"
 
-js_files |> render_table()
+js_files |> render_table(column_name = "Components")
 ```

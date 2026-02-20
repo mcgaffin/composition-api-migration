@@ -12,7 +12,7 @@ website:
         href: typescript-dashboard.qmd
       - text: "Tailwind {{< fa flask >}}"
         href: tailwind-migration.qmd
-      - text: "Testing Library"
+      - text: "Testing Library {{< fa flask >}}"
         href: testing-library-migration.qmd
       - text: "Pinia"
         href: pinia-migration.qmd

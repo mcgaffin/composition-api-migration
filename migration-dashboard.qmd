@@ -10,81 +10,11 @@ format:
 ---
 
 ```{r setup}
-library(dplyr)
-library(glue)
-library(httr2)
-library(jsonlite)
-library(kableExtra)
-library(knitr)
-library(purrr)
-library(stringr)
-library(tibble)
-
-GITHUB_API_HOST <- 'https://api.github.com'
-GITHUB_API_KEY <- Sys.getenv("GITHUB_API_KEY")
-GITHUB_SEARCH_PATH <- 'search/code'
-GITHUB_USER <- Sys.getenv("GITHUB_USER")
-
-get_names_from_git_response <- function(item) {
-  name <- item$path |> str_replace('ui/src/', '')
-  url <- item$html_url
-
-  glue('<a href="{url}" target="_blank">{name}</a>')
-}
-
-has_more_items <- function(resp) {
-  has_link_header <- resp_header_exists(resp, 'link')
-  if (!has_link_header) {
-    return(FALSE)
-  }
-
-  link_hdr <- resp |> resp_header('link')
-  grepl('rel="last"', link_hdr)
-}
-
-request_all_pages <- function(search_str) {
-  query <- glue('"{search_str}"+language:Vue+in:file+repo:posit-dev/connect')
-
-  total_count <- 0
-  request_page <- 1
-  items <- list()
-  repeat {
-    Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
-    resp <- request(GITHUB_API_HOST) |> 
-      req_url_path(GITHUB_SEARCH_PATH) |>
-      req_url_query(
-        q = I(query),
-        per_page = 100,
-        page = request_page
-      ) |> 
-      req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
-      req_perform()
-      
-    json_results <- resp |> resp_body_json()
-    total_count <- json_results$total_count
-    items <- c(items, json_results$items)
-
-    if (!has_more_items(resp)) {
-      break
-    }
-
-    request_page <- request_page + 1
-  }
-  
-  list(count = total_count, items = items)
-}
-
-render_table <- function(component_list) {
-  data.frame(Components = unlist(component_list)) |>
-    as_tibble() |>
-    arrange(Components) |>
-    kbl(escape = FALSE) |>
-    kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
-}
+source("R/github_utils.R")
 ```
 
 ```{r composition-components}
-composition_results <- request_all_pages("script%20setup")
+composition_results <- request_all_pages("script%20setup", language = "Vue")
 
 composition_count <- composition_results$count
 composition_components <- composition_results$items |>
@@ -92,7 +22,7 @@ composition_components <- composition_results$items |>
 ```
 
 ```{r option-components}
-option_results <- request_all_pages("export%20default%20{")
+option_results <- request_all_pages("export%20default%20{", language = "Vue")
 
 option_count <- option_results$count
 option_components <- option_results$items |>
@@ -107,8 +37,7 @@ option_components <- option_results$items |>
 #| icon: speedometer
 #| color: primary
 
-progress <- (composition_count / (composition_count + option_count) * 100) |> round()
-glue('{progress}%')
+glue('{calculate_progress(composition_count, option_count)}%')
 ```
 
 ```{r}
@@ -134,11 +63,11 @@ option_count
 ```{r}
 #| title: "Composition API"
 
-composition_components |> render_table()
+composition_components |> render_table(column_name = "Components")
 ```
 
 ```{r}
 #| title: Options API
 
-option_components |> render_table()
+option_components |> render_table(column_name = "Components")
 ```
