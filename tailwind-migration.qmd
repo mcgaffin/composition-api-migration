@@ -1,8 +1,8 @@
 ---
-title: Composition API Migration Dashboard
+title: Tailwind Migration Dashboard - {{< fa flask >}} Unconfirmed: maybe inaccurate
 format:
   dashboard:
-    logo: images/vuejs-forward-logo.png
+    logo: images/tailwindcss-mark.svg
     nav-buttons:
       - icon: github
         href: https://github.com/mcgaffin/composition-api-migration
@@ -42,24 +42,38 @@ has_more_items <- function(resp) {
   grepl('rel="last"', link_hdr)
 }
 
-request_all_pages <- function(search_str) {
-  query <- glue('"{search_str}"+language:Vue+in:file+repo:posit-dev/connect')
+request_all_pages <- function(search_str, language = NULL, path = NULL) {
+  query_parts <- c(
+    glue('"{search_str}"'),
+    'in:file',
+    'repo:posit-dev/connect'
+  )
+
+  if (!is.null(language)) {
+    query_parts <- c(query_parts, glue('language:{language}'))
+  }
+
+  if (!is.null(path)) {
+    query_parts <- c(query_parts, glue('path:{path}'))
+  }
+
+  query <- paste(query_parts, collapse = '+')
 
   total_count <- 0
   request_page <- 1
   items <- list()
   repeat {
     Sys.sleep(8)  # Wait 8 seconds between requests (stay under 10 requests/min limit)
-    resp <- request(GITHUB_API_HOST) |> 
+    resp <- request(GITHUB_API_HOST) |>
       req_url_path(GITHUB_SEARCH_PATH) |>
       req_url_query(
         q = I(query),
         per_page = 100,
         page = request_page
-      ) |> 
+      ) |>
       req_auth_basic(GITHUB_USER, GITHUB_API_KEY) |>
       req_perform()
-      
+
     json_results <- resp |> resp_body_json()
     total_count <- json_results$total_count
     items <- c(items, json_results$items)
@@ -70,11 +84,19 @@ request_all_pages <- function(search_str) {
 
     request_page <- request_page + 1
   }
-  
+
   list(count = total_count, items = items)
 }
 
 render_table <- function(component_list) {
+  if (length(component_list) == 0) {
+    return(
+      data.frame(Components = character(0)) |>
+        kbl(escape = FALSE) |>
+        kable_styling(bootstrap_options = c('striped', 'hover'), full_width = TRUE)
+    )
+  }
+
   data.frame(Components = unlist(component_list)) |>
     as_tibble() |>
     arrange(Components) |>
@@ -83,19 +105,28 @@ render_table <- function(component_list) {
 }
 ```
 
-```{r composition-components}
-composition_results <- request_all_pages("script%20setup")
+```{r style-components}
+# Vue components with <style> tags (not migrated to Tailwind)
+style_results <- request_all_pages("<style", language = "Vue", path = "ui/src")
 
-composition_count <- composition_results$count
-composition_components <- composition_results$items |>
+style_count <- style_results$count
+style_components <- style_results$items |>
   map(get_names_from_git_response)
 ```
 
-```{r option-components}
-option_results <- request_all_pages("export%20default%20{")
+```{r all-vue-components}
+# All Vue components using Composition API (script setup)
+all_vue_results <- request_all_pages("script%20setup", language = "Vue", path = "ui/src")
 
-option_count <- option_results$count
-option_components <- option_results$items |>
+all_vue_count <- all_vue_results$count
+all_vue_items <- all_vue_results$items
+
+# Filter out components with <style> to get Tailwind-migrated components
+style_paths <- style_results$items |> map_chr(~.x$path)
+tailwind_items <- all_vue_items |> keep(~!(.x$path %in% style_paths))
+
+tailwind_count <- length(tailwind_items)
+tailwind_components <- tailwind_items |>
   map(get_names_from_git_response)
 ```
 
@@ -103,42 +134,42 @@ option_components <- option_results$items |>
 
 ```{r}
 #| content: valuebox
-#| title: "Migration Progress"
+#| title: "Tailwind Migration Progress"
 #| icon: speedometer
 #| color: primary
 
-progress <- (composition_count / (composition_count + option_count) * 100) |> round()
+progress <- (tailwind_count / (tailwind_count + style_count) * 100) |> round()
 glue('{progress}%')
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Composition API Components"
+#| title: "Tailwind Components"
 #| icon: check-lg
 #| color: success
 
-composition_count
+tailwind_count
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Options API Components"
+#| title: "SCSS Components"
 #| icon: hourglass
 #| color: warning
 
-option_count
+style_count
 ```
 
 ## Row {.tabset}
 
 ```{r}
-#| title: "Composition API"
+#| title: "Tailwind Components"
 
-composition_components |> render_table()
+tailwind_components |> render_table()
 ```
 
 ```{r}
-#| title: Options API
+#| title: "Components with <style>"
 
-option_components |> render_table()
+style_components |> render_table()
 ```
