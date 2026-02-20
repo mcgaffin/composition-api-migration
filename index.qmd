@@ -18,36 +18,7 @@ format:
 Migrating Vue components from Options API to Composition API.
 
 [View Dashboard](migration-dashboard.qmd){.btn .btn-primary}
-[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/COMPOSITION_API_MIGRATION.md){.btn .btn-outline-info}
-:::
-:::
-:::
-
-::: {.g-col-12 .g-col-md-6}
-::: {.card .h-100}
-::: {.card-header}
-{{< fa arrows-rotate >}} Typescript
-:::
-
-::: {.card-body}
-Migrating to Typescript
-
-[View Dashboard](typescript-dashboard.qmd){.btn .btn-primary}
-[Migration Agent](https://github.com/posit-dev/connect/blob/main/.claude/agents/vue-typescript-migrator.md){.btn .btn-outline-info}
-:::
-:::
-:::
-
-::: {.g-col-12 .g-col-md-6}
-::: {.card .h-100}
-::: {.card-header}
-{{< fa palette >}} Tailwind CSS
-:::
-
-::: {.card-body}
-Transitioning from scoped SCSS to Tailwind utility classes.
-
-[View Dashboard](tailwind-migration.qmd){.btn .btn-primary}
+[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/COMPOSITION_API_MIGRATION.md){.btn .btn-outline-info target="_blank"}
 :::
 :::
 :::
@@ -62,8 +33,23 @@ Transitioning from scoped SCSS to Tailwind utility classes.
 Migrating state management from Vuex to Pinia stores.
 
 [View Dashboard](pinia-migration.qmd){.btn .btn-primary}
-[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/PINIA_MIGRATION.md){.btn .btn-outline-info}
+[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/PINIA_MIGRATION.md){.btn .btn-outline-info target="_blank"}
 
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.card .h-100}
+::: {.card-header}
+{{< fa palette >}} Tailwind CSS
+:::
+
+::: {.card-body}
+Transitioning from scoped SCSS to Tailwind utility classes.
+
+[View Dashboard](tailwind-migration.qmd){.btn .btn-primary}
+[Tailwind Docs](https://tailwindcss.com/docs/styling-with-utility-classes){.btn .btn-outline-info target="_blank"}
 :::
 :::
 :::
@@ -78,8 +64,23 @@ Migrating state management from Vuex to Pinia stores.
 Updating component tests to use Vue Testing Library patterns.
 
 [View Dashboard](testing-library-migration.qmd){.btn .btn-primary}
-[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/TESTING_LIBRARY_GUIDE.md){.btn .btn-outline-info}
+[Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/TESTING_LIBRARY_GUIDE.md){.btn .btn-outline-info target="_blank"}
 
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.card .h-100}
+::: {.card-header}
+{{< fa arrows-rotate >}} Typescript
+:::
+
+::: {.card-body}
+Migrating to Typescript
+
+[View Dashboard](typescript-dashboard.qmd){.btn .btn-primary}
+[Migration Agent](https://github.com/posit-dev/connect/blob/main/.claude/agents/vue-typescript-migrator.md){.btn .btn-outline-info target="_blank"}
 :::
 :::
 :::

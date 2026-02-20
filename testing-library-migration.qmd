@@ -1,5 +1,5 @@
 ---
-title: Testing Library Migration Dashboard - {{< fa flask >}} Unconfirmed (maybe inaccurate)
+title: Testing Library Migration Dashboard
 format:
   dashboard:
     logo: images/vuejs-forward-logo.png
@@ -13,7 +13,7 @@ format:
 source("R/github_utils.R")
 
 request_test_files <- function(search_str) {
-  results <- request_all_pages(search_str, path = "ui/src", extension = "ts")
+  results <- request_all_pages(search_str, path = "ui/src", literal = "language:typescript+OR+language:javascript")
 
   # Filter to only .test.ts or .test.js files
   test_items <- results$items |> keep(~grepl('\\.test\\.(ts|js)$', .x$path))
@@ -24,7 +24,7 @@ request_test_files <- function(search_str) {
 
 ```{r testing-library-suites}
 # Testing Library test suites (import render from @testing-library)
-testing_library_results <- request_test_files("@testing-library")
+testing_library_results <- request_test_files("testing-library")
 
 testing_library_count <- testing_library_results$count
 testing_library_suites <- testing_library_results$items |>

@@ -8,23 +8,23 @@ website:
     left:
       - text: "Composition API"
         href: migration-dashboard.qmd
-      - text: "Typescript"
-        href: typescript-dashboard.qmd
-      - text: "Tailwind {{< fa flask >}}"
-        href: tailwind-migration.qmd
-      - text: "Testing Library {{< fa flask >}}"
-        href: testing-library-migration.qmd
       - text: "Pinia"
         href: pinia-migration.qmd
+      - text: "Tailwind {{< fa flask >}}"
+        href: tailwind-migration.qmd
+      - text: "Testing Library"
+        href: testing-library-migration.qmd
+      - text: "Typescript"
+        href: typescript-dashboard.qmd
 
 format:
   html:
     theme:
       light: materia
-      dark: superhero
+      dark: darkly
     respect-user-color-scheme: true
   dashboard:
     theme:
       light: materia
-      dark: superhero
+      dark: darkly
     respect-user-color-scheme: true
