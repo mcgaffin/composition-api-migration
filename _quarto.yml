@@ -10,7 +10,7 @@ website:
         href: migration-dashboard.qmd
       - text: "Typescript"
         href: typescript-dashboard.qmd
-      - text: "Tailwind"
+      - text: "Tailwind {{< fa flask >}}"
         href: tailwind-migration.qmd
       - text: "Testing Library"
         href: testing-library-migration.qmd
