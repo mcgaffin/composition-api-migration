@@ -13,14 +13,14 @@ format:
 source("R/github_utils.R")
 
 request_by_extension <- function(ext) {
-  query <- glue('"import"+extension:{ext}+repo:posit-dev/connect+path:ui/src')
+  query <- glue('"import" extension:{ext} repo:posit-dev/connect path:ui/src')
   request_github_search(query)
 }
 ```
 
 ```{r typescript-vue-components}
 # Vue components with TypeScript (have lang="ts" in script setup)
-ts_vue_results <- request_all_pages("setup%20lang", language = "Vue")
+ts_vue_results <- request_all_pages("setup lang", language = "Vue")
 
 ts_vue_count <- ts_vue_results$count
 ts_vue_components <- ts_vue_results$items |>
@@ -29,7 +29,7 @@ ts_vue_components <- ts_vue_results$items |>
 
 ```{r javascript-vue-components}
 # All Vue components using Composition API (script setup)
-all_vue_results <- request_all_pages("script%20setup", language = "Vue")
+all_vue_results <- request_all_pages("script setup", language = "Vue")
 
 all_vue_count <- all_vue_results$count
 all_vue_items <- all_vue_results$items

@@ -24,7 +24,7 @@ style_components <- style_results$items |>
 
 ```{r all-vue-components}
 # All Vue components using Composition API (script setup)
-all_vue_results <- request_all_pages("script%20setup", language = "Vue", path = "ui/src")
+all_vue_results <- request_all_pages("script setup", language = "Vue", path = "ui/src")
 
 all_vue_count <- all_vue_results$count
 all_vue_items <- all_vue_results$items

@@ -14,7 +14,7 @@ source("R/github_utils.R")
 ```
 
 ```{r composition-components}
-composition_results <- request_all_pages("script%20setup", language = "Vue")
+composition_results <- request_all_pages("script setup", language = "Vue")
 
 composition_count <- composition_results$count
 composition_components <- composition_results$items |>
@@ -22,7 +22,7 @@ composition_components <- composition_results$items |>
 ```
 
 ```{r option-components}
-option_results <- request_all_pages("export%20default%20{", language = "Vue")
+option_results <- request_all_pages("export default {", language = "Vue")
 
 option_count <- option_results$count
 option_components <- option_results$items |>

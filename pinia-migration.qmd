@@ -24,7 +24,7 @@ pinia_stores <- pinia_results$items |>
 
 ```{r vuex-stores}
 # Vuex stores (use export default {)
-vuex_results <- request_all_pages("export%20default%20{", path = "ui/src/store")
+vuex_results <- request_all_pages("export default {", path = "ui/src/store")
 
 vuex_count <- vuex_results$count
 vuex_stores <- vuex_results$items |>

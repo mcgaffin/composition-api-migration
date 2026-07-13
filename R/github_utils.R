@@ -44,7 +44,10 @@ has_more_items <- function(resp) {
   }
 
   link_hdr <- resp |> resp_header("link")
-  grepl('rel="last"', link_hdr)
+  # A "next" link is present on every page except the last. (GitHub still
+  # emits a self-referential rel="last" on the final page, so checking for
+  # "last" never terminates the loop.)
+  grepl('rel="next"', link_hdr)
 }
 
 #' Execute a paginated GitHub code search
@@ -60,7 +63,7 @@ request_github_search <- function(query) {
     resp <- request(GITHUB_API_HOST) |>
       req_url_path(GITHUB_SEARCH_PATH) |>
       req_url_query(
-        q = I(query),
+        q = query,
         per_page = 100,
         page = request_page
       ) |>
@@ -126,7 +129,7 @@ request_all_pages <- function(search_str,
     query_parts <- c(query_parts, glue(literal))
   }
 
-  query <- paste(query_parts, collapse = "+")
+  query <- paste(query_parts, collapse = " ")
 
   request_github_search(query)
 }

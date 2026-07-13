@@ -13,7 +13,7 @@ format:
 source("R/github_utils.R")
 
 request_test_files <- function(search_str) {
-  results <- request_all_pages(search_str, path = "ui/src", literal = "language:typescript+OR+language:javascript")
+  results <- request_all_pages(search_str, path = "ui/src", literal = "language:typescript OR language:javascript")
 
   # Filter to only .test.ts or .test.js files
   test_items <- results$items |> keep(~grepl('\\.test\\.(ts|js)$', .x$path))
