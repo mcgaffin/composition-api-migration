@@ -17,8 +17,10 @@ format:
 ::: {.card-body}
 Migrating Vue components from Options API to Composition API.
 
+::: {.card-buttons}
 [View Dashboard](migration-dashboard.qmd){.btn .btn-primary}
 [Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/COMPOSITION_API_MIGRATION.md){.btn .btn-outline-info target="_blank"}
+:::
 :::
 :::
 :::
@@ -32,9 +34,11 @@ Migrating Vue components from Options API to Composition API.
 ::: {.card-body}
 Migrating state management from Vuex to Pinia stores.
 
+::: {.card-buttons}
 [View Dashboard](pinia-migration.qmd){.btn .btn-primary}
 [Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/PINIA_MIGRATION.md){.btn .btn-outline-info target="_blank"}
 
+:::
 :::
 :::
 :::
@@ -48,8 +52,10 @@ Migrating state management from Vuex to Pinia stores.
 ::: {.card-body}
 Transitioning from scoped SCSS to Tailwind utility classes.
 
+::: {.card-buttons}
 [View Dashboard](tailwind-migration.qmd){.btn .btn-primary}
 [Tailwind Docs](https://tailwindcss.com/docs/styling-with-utility-classes){.btn .btn-outline-info target="_blank"}
+:::
 :::
 :::
 :::
@@ -63,9 +69,11 @@ Transitioning from scoped SCSS to Tailwind utility classes.
 ::: {.card-body}
 Updating component tests to use Vue Testing Library patterns.
 
+::: {.card-buttons}
 [View Dashboard](testing-library-migration.qmd){.btn .btn-primary}
 [Migration Guide](https://github.com/posit-dev/connect/blob/main/ui/TESTING_LIBRARY_GUIDE.md){.btn .btn-outline-info target="_blank"}
 
+:::
 :::
 :::
 :::
@@ -79,8 +87,10 @@ Updating component tests to use Vue Testing Library patterns.
 ::: {.card-body}
 Migrating to Typescript
 
+::: {.card-buttons}
 [View Dashboard](typescript-dashboard.qmd){.btn .btn-primary}
 [Migration Agent](https://github.com/posit-dev/connect/blob/main/.claude/agents/vue-typescript-migrator.md){.btn .btn-outline-info target="_blank"}
+:::
 :::
 :::
 :::
